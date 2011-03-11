@@ -1,0 +1,115 @@
+
+
+material explosion/flame
+{
+	technique
+	{
+		pass
+		{
+			depth_write off
+			lighting off
+			diffuse vertexcolour
+			scene_blend add
+			texture_unit
+			{
+				tex_address_mode clamp
+				texture explosionFlame.png
+			}
+		}
+	}
+}
+
+material explosion/smoke
+{
+	technique
+	{
+		pass
+		{
+			depth_write off
+			lighting off
+			diffuse vertexcolour
+			scene_blend alpha_blend
+			texture_unit
+			{
+				tex_address_mode clamp
+				texture explosionSmoke.png
+			}
+		}
+	}
+}
+
+material explosion/flash
+{
+	technique
+	{
+		pass
+		{
+			depth_write off
+			lighting off
+			diffuse vertexcolour
+			scene_blend add
+			texture_unit
+			{
+				texture explosionFlash.png
+				tex_address_mode clamp
+			}
+		}
+	}
+}
+
+material explosion/longSparks
+{
+	technique
+	{
+		pass
+		{
+			scene_blend add
+			depth_write off
+			diffuse vertexcolour
+			lighting off
+			texture_unit
+			{
+				texture explosionLongSpark.png
+				tex_address_mode clamp
+			}
+		}
+	}
+}
+
+material explosion/smallSparks
+{
+	technique
+	{
+		pass
+		{
+			scene_blend add
+			depth_write off
+			diffuse vertexcolour
+			lighting off
+			texture_unit
+			{
+				texture explosionSmallSpark.png
+				tex_address_mode clamp
+			}
+		}
+	}
+}
+
+material explosion/smokeTrail
+{
+	technique
+	{
+		pass
+		{
+			scene_blend add
+			depth_write off
+			diffuse vertexcolour
+			lighting off
+			texture_unit
+			{
+				texture explosionSmokeTrail.png
+				tex_address_mode clamp
+			}
+		}
+	}
+}

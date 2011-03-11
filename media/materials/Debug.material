@@ -1,0 +1,138 @@
+material DebugGrid
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+
+			texture_unit
+			{
+				texture debug.png
+				tex_address_mode wrap
+			}
+			texture_unit
+			{
+				texture CubeMap_AO.png
+				tex_coord_set 1
+				colour_op modulate
+			}
+		}
+	}
+}
+
+material Arrow
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+			texture_unit
+			{
+				texture debugArrow.png
+				tex_address_mode wrap
+			}
+		}
+	}
+}
+
+material DebugSphere
+{
+	technique
+	{
+		pass
+		{
+			scene_blend alpha_blend
+			depth_write off
+			cull_hardware none
+			cull_software none
+			texture_unit
+			{
+				texture dbgs.png
+			}
+		}
+	}
+}
+
+material Debug1
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+
+			texture_unit
+			{
+				filtering anisotropic
+				max_anisotropy 16
+				texture daebugGrid.png
+				tex_address_mode wrap
+				tex_coord_set 0
+			}
+			/*texture_unit
+			{
+				filtering none
+				texture ao.png
+				tex_address_mode wrap
+				tex_coord_set 1
+				colour_op modulate
+			}*/
+		}
+	}
+}
+
+material Debug2
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+
+			texture_unit
+			{
+				filtering anisotropic
+				max_anisotropy 16
+				texture debugGrid2.png
+				tex_address_mode wrap
+			}
+			/*texture_unit
+			{
+				filtering none
+				texture ao.png
+				tex_address_mode border
+				tex_coord_set 1
+				colour_op modulate
+			}*/
+		}
+	}
+}
+// heh...
+material MeinKraft
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+			alpha_rejection greater 100
+
+			texture_unit
+			{
+				filtering none
+				texture terrain.png
+				tex_address_mode wrap
+			}
+			/*texture_unit
+			{
+				filtering none
+				texture ao.png
+				tex_address_mode border
+				tex_coord_set 1
+				colour_op modulate
+			}*/
+		}
+	}
+}
