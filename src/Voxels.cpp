@@ -23,10 +23,10 @@
 #include "OryxStringUtils.h"
 #include "OryxEngine.h"
 
-//#include "ChaiscriptSubsystem/ChaiscriptSubsystem.h"
-//#include "ALSubsystem/ALSubsystem.h"
+#include "ChaiscriptSubsystem/ChaiscriptSubsystem.h"
+#include "ALSubsystem/ALSubsystem.h"
 #include "OISSubsystem/OISSubsystem.h"
-//#include "ENetSubsystem/ENetSubsystem.h"
+#include "ENetSubsystem/ENetSubsystem.h"
 #include "BulletSubsystem/BulletSubsystem.h"
 #include "OgreSubsystem/OgreSubsystem.h"
 
@@ -40,21 +40,21 @@ int main()
     TimeManager::getPtr();
 
     // create subsystems:
-    //ChaiscriptSubsystem chaiSys = ChaiscriptSubsystem();
-    //ALSubsystem aSys = ALSubsystem();
+    ChaiscriptSubsystem chaiSys = ChaiscriptSubsystem();
+    ALSubsystem aSys = ALSubsystem();
 	OgreSubsystem ogre = OgreSubsystem(1024,768,false);
 	OISSubsystem ois = OISSubsystem();
-	//ENetSubsystem enet = ENetSubsystem();
+	ENetSubsystem enet = ENetSubsystem();
 	BulletSubsystem bull = BulletSubsystem();
 
     // allocate engine and add subsystems
     Engine* eng = new Engine();
-    //eng->addSubsystem(&chaiSys);
-    //eng->addSubsystem(&aSys);
+    eng->addSubsystem(&chaiSys);
+    eng->addSubsystem(&aSys);
 	eng->addSubsystem(&bull);
     eng->addSubsystem(&ogre);
 	eng->addSubsystem(&ois);
-	//eng->addSubsystem(&enet);
+	eng->addSubsystem(&enet);
 
     // initialize the engine
     eng->init();
