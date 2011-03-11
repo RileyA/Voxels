@@ -152,7 +152,10 @@ namespace Oryx
 
 		memset(data,(byte)0,CHUNK_VOLUME);
 
-		for(int i=0;i<CHUNK_SIZE_X;++i)
+		// TODO Use 3d perlin, but use less samples and lerp
+
+		// 3d perlin
+		/*for(int i=0;i<CHUNK_SIZE_X;++i)
 			for(int j=0;j<CHUNK_SIZE_Y;++j)
 				for(int k=0;k<CHUNK_SIZE_Z;++k)
 		{
@@ -168,10 +171,10 @@ namespace Oryx
 				else 
 					data[i][j][k] = 3;
 			}
-		}
+		}*/
 
 
-		/*for(int i=0;i<CHUNK_SIZE_X;++i)
+		for(int i=0;i<CHUNK_SIZE_X;++i)
 			//for(int j=0;j<CHUNK_SIZE_Y;++j)
 				for(int k=0;k<CHUNK_SIZE_Z;++k)
 		{
@@ -195,25 +198,9 @@ namespace Oryx
 					val = 3;
 				else if(rand()%100==0)
 					val = 1;
-				
-				//if(h-j<10&&mPerlin->GetValue(static_cast<double>(i+c.x*16)/60.0,static_cast<double>(j)/3.0,static_cast<double>(k+c.z*16)/60.0)<0.0)
-				//	val = 0;
-
 				data[i][j][k] = val;
 			}
-				//data[i][j][k] = 0;
-				//if(j<12)
-				//{
-				//	if(rand()%100==0)
-				//		data[i][j][k] = 1;
-				//	else
-				//		data[i][j][k] = 2;
-				//}
-				//else if(j<14)
-				//	data[i][j][k] = 3;
-				//else if(j<15)
-				//	data[i][j][k] = 4;
-		}*/
+		}
 
 		Chunk* ch = new Chunk(Vector3(c.x*CHUNK_SIZE_X-CHUNK_SIZE_X/2,c.y*CHUNK_SIZE_Y-CHUNK_SIZE_Y/2,
 			c.z*CHUNK_SIZE_Z-CHUNK_SIZE_Z/2),this,&data[0][0][0]);

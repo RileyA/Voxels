@@ -56,7 +56,6 @@ int main()
 	eng->addSubsystem(&ois);
 	//eng->addSubsystem(&enet);
 
-	//std::cout<<"added subs\n";
     // initialize the engine
     eng->init();
 
