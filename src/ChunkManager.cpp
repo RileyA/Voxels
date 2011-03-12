@@ -25,12 +25,15 @@
 
 namespace Oryx
 {
+	const Real ChunkManager::UPDATE_INTERVAL = 0.1f;
+
 	ChunkManager::ChunkManager(Vector3 position)
-		:radius(10),mLast(10,10,10)
+		:radius(12),mLast(10,10,10)
 	{
 		mPerlin = new noise::module::Perlin();
-		generate(position);
-		radius = 5;
+		generate(position, Vector3::UNIT_Z, true);
+		radius = 2;
+		mUpdateTimer = 0.f;
 	}
 	//-----------------------------------------------------------------------
 
@@ -47,6 +50,9 @@ namespace Oryx
 	
 	void ChunkManager::update(Real delta)
 	{
+		mUpdateTimer+=delta;
+		
+
 		std::stack<Chunk*> updated;
 		Real start = TimeManager::getPtr()->getTimeDecimal();
 
@@ -105,27 +111,58 @@ namespace Oryx
 	}
 	//-----------------------------------------------------------------------
 	
-	void ChunkManager::generate(Vector3 position)
+	void ChunkManager::generate(Vector3 position,Vector3 direction, bool first)
 	{
-		int i = (position.x+CHUNK_SIZE_X/2)/CHUNK_SIZE_X;
-		int k = (position.z+CHUNK_SIZE_Z/2)/CHUNK_SIZE_Z;
+		if(first)
+		{
+			int i = (position.x+CHUNK_SIZE_X/2)/CHUNK_SIZE_X;
+			int k = (position.z+CHUNK_SIZE_Z/2)/CHUNK_SIZE_Z;
 
-		if(mLast.x!=i||mLast.z!=k)//||mLast.y!=j)
-		{			
-			ChunkCoords c = (i-radius,0,k-radius);
+			if(mLast.x!=i||mLast.z!=k)//||mLast.y!=j)
+			{			
+				ChunkCoords c = (i-radius,0,k-radius);
 
-			for(c.x = i-radius; c.x<=i+radius; ++c.x)
-				for(c.z = k-radius; c.z<=k+radius; ++c.z)
-					createChunk(c);
+				for(c.x = i-radius; c.x<=i+radius; ++c.x)
+					for(c.z = k-radius; c.z<=k+radius; ++c.z)
+						createChunk(c);
 
-			int radius2 = radius==10 ? 3 : 2;
-			c = (i-radius2,0,k-radius2);
-			for(c.x = i-radius2; c.x<=i+radius2; ++c.x)
-				for(c.z = k-radius2; c.z<=k+radius2; ++c.z)
-						if(!mChunks[c]->isActive())
-							mChunks[c]->setActive(1);
+				int radius2 = radius==12 ? 4 : 2;
+				c = (i-radius2,0,k-radius2);
+				for(c.x = i-radius2; c.x<=i+radius2; ++c.x)
+					for(c.z = k-radius2; c.z<=k+radius2; ++c.z)
+							if(!mChunks[c]->isActive())
+								mChunks[c]->setActive(1);
+			}
+			mLast = ChunkCoords(i,0,k);
 		}
-		mLast = ChunkCoords(i,0,k);
+		else if(mUpdateTimer > UPDATE_INTERVAL)
+		{
+			mUpdateTimer = 0.f;
+			std::priority_queue<ChunkCompare> pq;
+			int i = (position.x+CHUNK_SIZE_X/2)/CHUNK_SIZE_X;
+			int k = (position.z+CHUNK_SIZE_Z/2)/CHUNK_SIZE_Z;
+			position.y = 0;
+
+			int rad = 5;
+
+			ChunkCoords c = (i-rad,0,k-rad);
+			for(c.x = i-rad; c.x<=i+rad; ++c.x)
+				for(c.z = k-rad; c.z<=k+rad; ++c.z)
+			{
+				Chunk* ch = getChunk(c);
+				if(!ch || !ch->isActive())
+					pq.push(ChunkCompare(c, position, direction, ch));
+			}
+
+			for(int i=0;!pq.size()<=0&&i<2;++i)
+			{
+				if(!pq.top().chunk)
+					createChunk(pq.top().pos);
+				else
+					pq.top().chunk->setActive(true);
+				pq.pop();
+			}
+		}
 	}
 	//-----------------------------------------------------------------------
 	
@@ -150,6 +187,8 @@ namespace Oryx
 
 		byte data[CHUNK_SIZE_X][CHUNK_SIZE_Y][CHUNK_SIZE_Z];
 
+		PerlinVolume v = PerlinVolume(mPerlin,c.x,c.y,c.z);
+
 		memset(data,(byte)0,CHUNK_VOLUME);
 
 		// TODO Use 3d perlin, but use less samples and lerp
@@ -165,7 +204,7 @@ namespace Oryx
 				data[i][j][k] = 0;
 			else
 			{
-				double height = mPerlin->GetValue(static_cast<double>(i+c.x*16)/30.0,static_cast<double>(j+c.y*16)/30.0,static_cast<double>(k+c.z*16)/30.0);
+				double height = v.sample(i,j,k);//mPerlin->GetValue(static_cast<double>(i+c.x*16)/30.0,static_cast<double>(j+c.y*16)/30.0,static_cast<double>(k+c.z*16)/30.0);
 				if(height<0)
 					data[i][j][k] = 0;
 				else 
@@ -178,17 +217,17 @@ namespace Oryx
 			//for(int j=0;j<CHUNK_SIZE_Y;++j)
 				for(int k=0;k<CHUNK_SIZE_Z;++k)
 		{
-			double height = mPerlin->GetValue(static_cast<double>(i+c.x*16)/60.0,0.0,static_cast<double>(k+c.z*16)/60.0);
+			//if(v.sample(i,j,k) > 0)
+			//	data[i][j][k] = 3;
+			//else
+			//	data[i][j][k] = 0;
+			double height = v.sample(i,0,k);//mPerlin->GetValue(static_cast<double>(i+c.x*16)/60.0,0.0,static_cast<double>(k+c.z*16)/60.0);
 			//height+=0.2;
 			//if(height>1.0)
 			//	height = 1.0;
 			height = (height+1.0)/2.0;
-			int h = height*10+3;
-			//h+=20;
-			//if(h > 12)
-			//	h = 12;
-			//if(h<2)
-			//	h = 2;
+			int h = height*20+3;
+			h+=20;
 			for(int j=0;j<=h;++j)
 			{
 				int val = 2;
@@ -226,4 +265,47 @@ namespace Oryx
 		}
 	}
 	//-----------------------------------------------------------------------
+	
+
+	ChunkManager::PerlinVolume::PerlinVolume(noise::module::Perlin* p,int x, int y, int z)
+	{
+		mNoise = p;
+		for(int i=0;i<SAMPLE_X;++i)for(int j=0;j<SAMPLE_Y;++j)for(int k=0;k<SAMPLE_Z;++k)
+		{
+			double v = mNoise->GetValue(
+				(x*16+i*(4))/60.0,
+				(y*8+j*(2))/60.0,
+				(z*16+k*(4))/60.0);
+
+			mData[i][j][k] = v;
+		}
+	}
+	//-----------------------------------------------------------------------
+
+	double ChunkManager::PerlinVolume::sample(int x, int y, int z)
+	{
+		// good 'ol trilinear interpolation
+		double xd = static_cast<float>(x%4)/4;
+		double yd = static_cast<float>(y%8)/8;
+		double zd = static_cast<float>(z%4)/4;
+		x/=4;
+		y/=8;
+		z/=4;
+		
+		// push back along z axis
+		double i1 = mData[x][y+1][z]*(1-zd) + mData[x][y+1][z+1]*zd;
+		double i2 = mData[x][y][z]*(1-zd) + mData[x][y][z+1]*zd;
+
+		double j1 = mData[x+1][y+1][z]*(1-zd) + mData[x+1][y+1][z+1]*zd;
+		double j2 = mData[x+1][y][z]*(1-zd) + mData[x+1][y][z+1]*zd;
+
+		// push down the y axis
+		double w1 = i1 * (1 - yd) + i2 * yd;
+		double w2 = j1 * (1 - yd) + j2 * yd;
+
+		// and finally interpolate accross the x
+		double out = w1 * (1 - xd) + w2 * xd;
+
+		return out;
+	}
 }

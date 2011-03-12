@@ -36,7 +36,7 @@ namespace Oryx
 	// NOTE: These must be multiples of CHUNK_STEP 
 	const byte CHUNK_STEP = 4;
 	const byte CHUNK_SIZE_X = 16;
-	const byte CHUNK_SIZE_Y = 16;
+	const byte CHUNK_SIZE_Y = 64;
 	const byte CHUNK_SIZE_Z = 16;
 
 	const byte CHUNK_STEPS_X = CHUNK_SIZE_X/CHUNK_STEP;

@@ -120,12 +120,14 @@ namespace Oryx
 		}
 
 		if(mChunk)
-			mOgre->destroySceneNode(mChunk);
-
-		mChunk = mOgre->createMesh(d);
-		mChunk->setMaterialName(mMaterial);
-		mOgre->getRootSceneNode()->addChild(mChunk);
-		mChunk->setPosition(mPosition);
+			mChunk->update(d);//mOgre->destroySceneNode(mChunk);
+		else
+		{
+			mChunk = mOgre->createMesh(d);
+			mChunk->setMaterialName(mMaterial);
+			mOgre->getRootSceneNode()->addChild(mChunk);
+			mChunk->setPosition(mPosition);
+		}
 
 		//if(physics)
 			rebuildPhysics(d);

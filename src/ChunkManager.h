@@ -38,6 +38,38 @@ namespace noise
 
 namespace Oryx
 {
+	const int SAMPLE_X = 5;
+	const int SAMPLE_Y = 2;
+	const int SAMPLE_Z = 5;
+
+	struct ChunkCompare
+	{
+	public:
+
+		ChunkCompare(ChunkCoords cc, Vector3 playerPos, Vector3 playerView, Chunk* c)
+		{
+			Vector3 chunkPos;
+			pos = cc;
+			chunkPos = Vector3(cc.x*16,0,cc.z*16);
+			Vector3 ptoC = chunkPos - playerPos;
+			Real distance = ptoC.length();
+			Real angle = ptoC.angleBetween(playerView);
+			priority = static_cast<int>(
+				((angle < 70.f) ? (70.f - angle)/7.f : 0) +
+				((distance < (16 * 10)) ? (10-distance/16) : 0));
+			chunk = c;
+		}
+
+		bool operator < (const ChunkCompare& other) const
+		{
+			return priority < other.priority;
+		}
+
+		int priority;
+		Chunk* chunk;
+		ChunkCoords pos;
+	};
+
 	class ChunkManager : public Object
 	{
 	public:
@@ -47,7 +79,7 @@ namespace Oryx
 
 		void update(Real delta);
 		
-		void generate(Vector3 pos);
+		void generate(Vector3 pos,Vector3 direction = Vector3::UNIT_Z,bool first = false);
 		void killBlocks(Vector3 p,float radius);
 
 		Chunk* getChunk(ChunkCoords c);
@@ -62,6 +94,22 @@ namespace Oryx
 		ChunkCoords mLast;
 		noise::module::Perlin* mPerlin;
 
+		Real mUpdateTimer;
+		const static Real UPDATE_INTERVAL;
+
+		class PerlinVolume
+		{
+		public:
+
+			PerlinVolume(noise::module::Perlin* p,int x, int y, int z);
+			double sample(int x, int y, int z);
+			
+		private:
+
+			noise::module::Perlin* mNoise;
+			double mData[SAMPLE_X][SAMPLE_Y][SAMPLE_Z];
+
+		};
 	};
 }
 

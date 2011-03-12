@@ -25,6 +25,7 @@
 #include "OryxStringUtils.h"
 #include "OryxLogger.h"
 #include "OgreSubsystem/GUIButton.h"
+#include "ChaiscriptSubsystem/ChaiscriptSubsystem.h"
 
 namespace Oryx
 {
@@ -65,6 +66,9 @@ namespace Oryx
 		bts->setGravity(Vector3(0,-5,0));
 
 		// TODO ch = bts->createQuantaCCT(Vector3(0,50,0));
+		//
+		ChaiscriptSubsystem* chai = mEngine->getSubsystem("ChaiscriptSubsystem")->castType<ChaiscriptSubsystem>();
+		chai->runString("getAL().play2D(\"../media/audio/boom.wav\");");
 	}
 
 	void VoxelGameState::update(Real delta)
