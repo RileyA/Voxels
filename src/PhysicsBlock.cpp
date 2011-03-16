@@ -26,6 +26,9 @@ namespace Oryx
 		BulletSubsystem* b = Engine::getPtr()->getSubsystem("BulletSubsystem")->
 		castType<BulletSubsystem>();
 
+		if(d.vertices.size() == 0)
+			return;
+
 		if(block)
 			block->_kill();
 

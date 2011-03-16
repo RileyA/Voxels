@@ -10,4 +10,7 @@ if os.name == 'nt':
 else:
 	env = Environment();
 	env['ENV']['LD_RUN_PATH']='.'
+	debug = ARGUMENTS.get('debug', 0)
+	if int(debug):
+		env.Append(CCFLAGS = '-g')
 	env.Program('Voxels',sources,CPPPATH=['../../OryxEngine/src'],LIBS=libs,LIBPATH='../bin')

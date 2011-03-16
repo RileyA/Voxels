@@ -28,7 +28,7 @@ namespace Oryx
 	const Real ChunkManager::UPDATE_INTERVAL = 0.1f;
 
 	ChunkManager::ChunkManager(Vector3 position)
-		:radius(12),mLast(10,10,10)
+		:radius(6),mLast(10,10,10)
 	{
 		mPerlin = new noise::module::Perlin();
 		generate(position, Vector3::UNIT_Z, true);
@@ -126,7 +126,7 @@ namespace Oryx
 					for(c.z = k-radius; c.z<=k+radius; ++c.z)
 						createChunk(c);
 
-				int radius2 = radius==12 ? 4 : 2;
+				int radius2 = radius==6 ? 4 : 2;
 				c = (i-radius2,0,k-radius2);
 				for(c.x = i-radius2; c.x<=i+radius2; ++c.x)
 					for(c.z = k-radius2; c.z<=k+radius2; ++c.z)
@@ -154,7 +154,7 @@ namespace Oryx
 					pq.push(ChunkCompare(c, position, direction, ch));
 			}
 
-			for(int i=0;!pq.size()<=0&&i<2;++i)
+			for(int i=0;!pq.empty()&&i<2;++i)
 			{
 				if(!pq.top().chunk)
 					createChunk(pq.top().pos);
@@ -179,70 +179,97 @@ namespace Oryx
 		return 0;
 	}
 	//-----------------------------------------------------------------------
-	
+
+	// hacky little tree addition thingy
+	void addTree(byte data[CHUNK_SIZE_X][CHUNK_SIZE_Y][CHUNK_SIZE_Z], int i, int h, int k)
+	{
+		if(i>2&&i<CHUNK_SIZE_X-3&&
+			k>2&&k<CHUNK_SIZE_Z-3&&rand()%200==0)
+		{
+			data[i][h+1][k] = 5;
+			data[i][h+2][k] = 5;
+			data[i][h+3][k] = 5;
+			data[i][h+4][k] = 5;
+				data[i+1][h+4][k] = 1;
+				data[i][h+4][k+1] = 1;
+				data[i][h+4][k-1] = 1;
+				data[i-1][h+4][k] = 1;
+				data[i+1][h+4][k+1] = 1;
+				data[i-1][h+4][k-1] = 1;
+				data[i+1][h+4][k-1] = 1;
+				data[i-1][h+4][k+1] = 1;
+				data[i+1][h+4][k+2] = 1;
+				data[i][h+4][k+2] = 1;
+				data[i-1][h+4][k+2] = 1;
+				data[i+1][h+4][k-2] = 1;
+				data[i][h+4][k-2] = 1;
+				data[i-1][h+4][k-2] = 1;
+				data[i+2][h+4][k+1] = 1;
+				data[i+2][h+4][k] = 1;
+				data[i+2][h+4][k-1] = 1;
+				data[i-2][h+4][k-1] = 1;
+				data[i-2][h+4][k] = 1;
+				data[i-2][h+4][k+1] = 1;
+			data[i][h+5][k] = 5;
+				data[i+1][h+5][k] = 1;
+				data[i][h+5][k+1] = 1;
+				data[i][h+5][k-1] = 1;
+				data[i-1][h+5][k] = 1;
+				data[i+1][h+5][k+1] = 1;
+				data[i-1][h+5][k-1] = 1;
+				data[i+1][h+5][k-1] = 1;
+				data[i-1][h+5][k+1] = 1;
+				data[i+1][h+5][k+2] = 1;
+				data[i][h+5][k+2] = 1;
+				data[i-1][h+5][k+2] = 1;
+				data[i+1][h+5][k-2] = 1;
+				data[i][h+5][k-2] = 1;
+				data[i-1][h+5][k-2] = 1;
+				data[i+2][h+5][k+1] = 1;
+				data[i+2][h+5][k] = 1;
+				data[i+2][h+5][k-1] = 1;
+				data[i-2][h+5][k-1] = 1;
+				data[i-2][h+5][k] = 1;
+				data[i-2][h+5][k+1] = 1;
+			data[i][h+6][k] = 5;
+				data[i+1][h+6][k] = 1;
+				data[i][h+6][k+1] = 1;
+				data[i][h+6][k-1] = 1;
+				data[i-1][h+6][k] = 1;
+				data[i+1][h+6][k+1] = 1;
+				data[i-1][h+6][k-1] = 1;
+				data[i+1][h+6][k-1] = 1;
+				data[i-1][h+6][k+1] = 1;
+				data[i+1][h+7][k] = 1;
+				data[i][h+7][k+1] = 1;
+				data[i][h+7][k-1] = 1;
+				data[i-1][h+7][k] = 1;
+				data[i][h+7][k] = 1;
+		}
+	}
+
 	Chunk* ChunkManager::createChunk(ChunkCoords c)
 	{
 		if(getChunk(c))
 			return 0;
 
-		byte data[CHUNK_SIZE_X][CHUNK_SIZE_Y][CHUNK_SIZE_Z];
-
-		PerlinVolume v = PerlinVolume(mPerlin,c.x,c.y,c.z);
-
-		memset(data,(byte)0,CHUNK_VOLUME);
-
-		// TODO Use 3d perlin, but use less samples and lerp
-
-		// 3d perlin
-		/*for(int i=0;i<CHUNK_SIZE_X;++i)
-			for(int j=0;j<CHUNK_SIZE_Y;++j)
-				for(int k=0;k<CHUNK_SIZE_Z;++k)
-		{
-			if(j==0)
-				data[i][j][k] = 3;
-			else if(j==15)
-				data[i][j][k] = 0;
-			else
-			{
-				double height = v.sample(i,j,k);//mPerlin->GetValue(static_cast<double>(i+c.x*16)/30.0,static_cast<double>(j+c.y*16)/30.0,static_cast<double>(k+c.z*16)/30.0);
-				if(height<0)
-					data[i][j][k] = 0;
-				else 
-					data[i][j][k] = 3;
-			}
-		}*/
-
-
-		for(int i=0;i<CHUNK_SIZE_X;++i)
-			//for(int j=0;j<CHUNK_SIZE_Y;++j)
-				for(int k=0;k<CHUNK_SIZE_Z;++k)
-		{
-			//if(v.sample(i,j,k) > 0)
-			//	data[i][j][k] = 3;
-			//else
-			//	data[i][j][k] = 0;
-			double height = v.sample(i,0,k);//mPerlin->GetValue(static_cast<double>(i+c.x*16)/60.0,0.0,static_cast<double>(k+c.z*16)/60.0);
-			//height+=0.2;
-			//if(height>1.0)
-			//	height = 1.0;
-			height = (height+1.0)/2.0;
-			int h = height*20+3;
-			h+=20;
-			for(int j=0;j<=h;++j)
-			{
-				int val = 2;
-				if(h == j)
-					val = 4;
-				else if(h-j<4)
-					val = 3;
-				else if(rand()%100==0)
-					val = 1;
-				data[i][j][k] = val;
-			}
-		}
+		// TODO Use 3d perlin, or something... kidnap notch and figure out how minecraft's generator does overhangs and such...
 
 		Chunk* ch = new Chunk(Vector3(c.x*CHUNK_SIZE_X-CHUNK_SIZE_X/2,c.y*CHUNK_SIZE_Y-CHUNK_SIZE_Y/2,
-			c.z*CHUNK_SIZE_Z-CHUNK_SIZE_Z/2),this,&data[0][0][0]);
+			c.z*CHUNK_SIZE_Z-CHUNK_SIZE_Z/2),this,0);
+
+		PerlinVolume v = PerlinVolume(mPerlin,c.x,c.y,c.z,0.35);// elevantion
+		PerlinVolume v2 = PerlinVolume(mPerlin,c.x,c.y,c.z,0.5);// roughness
+		PerlinVolume v3 = PerlinVolume(mPerlin,c.x,c.y,c.z,1.5f);// detail
+		
+		for(int i=0;i<CHUNK_SIZE_X;++i)
+		for(int k=0;k<CHUNK_SIZE_Z;++k)
+		{
+			int height = 20 + v.sample(i,0,k)*15.0 + v2.sample(i,0,k)*v3.sample(i,0,k)*11.0;//10*((h2*h3)/2.f);
+			for(int j=0;j<height;++j)
+				ch->blocked[i][j][k] = (j==height-1) ? 4 : 3;
+			addTree(ch->blocked,i,height-1,k);
+		}
 
 		for(int i=0;i<6;++i)
 			ch->neighbors[i] = getChunk(c<<i);
@@ -267,16 +294,15 @@ namespace Oryx
 	//-----------------------------------------------------------------------
 	
 
-	ChunkManager::PerlinVolume::PerlinVolume(noise::module::Perlin* p,int x, int y, int z)
+	ChunkManager::PerlinVolume::PerlinVolume(noise::module::Perlin* p,int x, int y, int z, float scale)
 	{
 		mNoise = p;
-		for(int i=0;i<SAMPLE_X;++i)for(int j=0;j<SAMPLE_Y;++j)for(int k=0;k<SAMPLE_Z;++k)
+		for(int i=0;i<SAMPLE_X;++i)for(int j=0;j<1;++j)for(int k=0;k<SAMPLE_Z;++k)
 		{
 			double v = mNoise->GetValue(
-				(x*16+i*(4))/60.0,
-				(y*8+j*(2))/60.0,
-				(z*16+k*(4))/60.0);
-
+				(x*16+i*(4))/60.0 * scale,
+				(y*16+j*(4))/60.0 * scale,
+				(z*16+k*(4))/60.0 * scale);
 			mData[i][j][k] = v;
 		}
 	}
@@ -284,13 +310,14 @@ namespace Oryx
 
 	double ChunkManager::PerlinVolume::sample(int x, int y, int z)
 	{
-		// good 'ol trilinear interpolation
+		/*
 		double xd = static_cast<float>(x%4)/4;
 		double yd = static_cast<float>(y%8)/8;
 		double zd = static_cast<float>(z%4)/4;
 		x/=4;
 		y/=8;
 		z/=4;
+
 		
 		// push back along z axis
 		double i1 = mData[x][y+1][z]*(1-zd) + mData[x][y+1][z+1]*zd;
@@ -306,6 +333,20 @@ namespace Oryx
 		// and finally interpolate accross the x
 		double out = w1 * (1 - xd) + w2 * xd;
 
+		return out;*/
+
+		// bilinear interpolation
+		// TODO: make 2d/3d an option, or separate class?
+		double xd = static_cast<float>(x%4)/4;
+		double zd = static_cast<float>(z%4)/4;
+		x/=4;
+		z/=4;
+		
+		// push along x axis
+		double r1 = mData[x][0][z] * (1-xd) + mData[x+1][0][z] * xd;
+		double r2 = mData[x][0][z+1] * (1-xd) + mData[x+1][0][z+1] * xd;
+
+		double out = r1 * (1 - zd) + r2 * zd;
 		return out;
 	}
 }

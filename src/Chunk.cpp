@@ -42,13 +42,15 @@ namespace Oryx
 		mPosition = position;
 		mOgre = Engine::getPtr()->getSubsystem("OgreSubsystem")->castType<OgreSubsystem>();
 
-		memset(light,0,CHUNK_VOLUME);
-		memcpy(blocked,data,CHUNK_VOLUME);
-	
-		BulletSubsystem* b = Engine::getPtr()->getSubsystem("BulletSubsystem")->
-			castType<BulletSubsystem>();
+		memset(light,(byte)0,CHUNK_VOLUME);
+		memset(blocked,(byte)0,CHUNK_VOLUME);
 
-		mBlock = new PhysicsBlock(0,0,0,position,0,this);
+		//for(int i=0;i<CHUNK_SIZE_X;++i)
+		//for(int j=0;j<CHUNK_SIZE_Y;++j)
+		//for(int k=0;k<CHUNK_SIZE_Z;++k)
+		//	blocked[i][j][k] = j<32 ? 4 : 0;
+
+		mBlock = 0;//new PhysicsBlock(0,0,0,position,0,this);
 
 		mActive = false;
 		mDirty = false;
@@ -60,7 +62,8 @@ namespace Oryx
 	
 	Chunk::~Chunk()
 	{
-		delete mBlock;
+		if(mBlock)
+			delete mBlock;
 	}
 	//-----------------------------------------------------------------------
 
@@ -76,14 +79,13 @@ namespace Oryx
 		}
 		MeshData d;
 		d.addTexcoordSet();
-		d.addTexcoordSet();
 		physics = mDirty||physics;
 
 		for(int i=0;i<CHUNK_SIZE_X;++i)for(int j=0;j<CHUNK_SIZE_Y;++j)for(int k=0;k<CHUNK_SIZE_Z;++k)
 		{
 			byte type = blocked[i][j][k];
 
-			if(!type)
+			if(blockTransparent(type))
 			{
 				// very ugly, but hard coding this all seems a good deal more efficient 
 				// than my attempt at a cleaner version...
@@ -110,7 +112,7 @@ namespace Oryx
 
 				byte lt[6] = {0,0,0,0,0,0};
 				for(int p=0;p<6;++p)
-					if(adjacents[p])
+					//if(adjacents[p])
 						lt[p] = ChunkUtils::getLight(this,bc<<p);
 				
 				for(int p=0;p<6;++p)
@@ -127,6 +129,7 @@ namespace Oryx
 			mChunk->setMaterialName(mMaterial);
 			mOgre->getRootSceneNode()->addChild(mChunk);
 			mChunk->setPosition(mPosition);
+			//mChunk = 0;
 		}
 
 		//if(physics)
@@ -209,6 +212,8 @@ namespace Oryx
 	{
 		if(!mActive)
 			return;
+		if(!mBlock)
+			mBlock = new PhysicsBlock(0,0,0,mPosition,0,this);
 		mBlock->rebuild(d);
 	}
 	//-----------------------------------------------------------------------

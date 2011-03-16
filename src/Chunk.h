@@ -180,11 +180,11 @@ namespace Oryx
 		/** Helper that gets whether a type of block is solid */
 		bool blockSolid(byte chunkValue)
 		{
-			#ifdef ALLOW_BLOCK_TRANSPARENCY
-				return !TRANSPARENT[chunkValue];
-			#else
+			//#ifdef ALLOW_BLOCK_TRANSPARENCY
+			//	return !TRANSPARENT[chunkValue];
+			//#else
 				return chunkValue;
-			#endif
+			//#endif
 		}
 
 		/** Helper that gets whether a type of block is transparent*/

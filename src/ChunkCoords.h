@@ -25,14 +25,12 @@
 #include "OryxColour.h"
 
 #define COLORVAL(x) Colour(x,x,x)
-//#define ALLOW_BLOCK_TRANSPARENCY
+#define ALLOW_BLOCK_TRANSPARENCY
 //#define BLOCK_NORMALS
 #define SMOOTH_LIGHTING
 
 namespace Oryx
 {
-	// NOTE: As of right now changing these will probably cause a spectacular crash,
-	// I'm working on generalizing everything though...
 	// NOTE: These must be multiples of CHUNK_STEP 
 	const byte CHUNK_STEP = 4;
 	const byte CHUNK_SIZE_X = 16;
@@ -170,11 +168,11 @@ namespace Oryx
 	};
 
 	#ifdef ALLOW_BLOCK_TRANSPARENCY
-	const byte TRANSPARENT[6] = {1,0,0,0,0,0};
+	const byte TRANSPARENT[7] = {1,3,0,0,0,0,0};
 	#endif
 
 	// map tex atlas positions to faces and block indices
-	const byte MAPPINGS[5][6] = 
+	const byte MAPPINGS[6][6] = 
 	{
 		/*{1,1,1,1,1,1},
 		{1,1,1,1,1,1},
@@ -183,10 +181,12 @@ namespace Oryx
 		{4,4,4,4,4,4}*/
 		// Minecraft "terrain.png" test:
 		{1,1,1,1,1,1},
-		{51,51,51,51,51,51},
+		{53,53,53,53,53,53},
+		//{51,51,51,51,51,51},
 		{2,2,2,2,2,2},
 		{3,3,3,3,3,3},
-		{4,4,3,1,4,4}
+		{4,4,3,1,4,4},
+		{21,21,22,22,21,21}
 	};
 
 	const byte FILTERVERTEX[6] = {0,3,1,3,2,1}; // convert 0-5 to 0-3 with vertices (since I'm too lazy to use shared verts...)

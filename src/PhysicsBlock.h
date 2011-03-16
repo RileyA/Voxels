@@ -45,17 +45,17 @@ namespace Oryx
 		PhysicsBlock(int i, int j, int k,Vector3 p,CollisionObject* bl,Chunk* par)
 		{
 			pos = p;
-			block = bl;
+			block = 0;//bl;
 			x = i*CHUNK_STEP;
 			y = j*CHUNK_STEP;
 			z = k*CHUNK_STEP;
 			parent = par;
-			if(block)
-			{
-				block->setUserData(parent);
+			//if(block)
+			//{
+			//	block->setUserData(parent);
 				//block->setCollisionGroup(COLLISION_GROUP_1);
 				//block->setCollisionMask(COLLISION_GROUP_15|COLLISION_GROUP_1|COLLISION_GROUP_3);
-			}
+			//}
 		}
 
 		~PhysicsBlock()

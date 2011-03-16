@@ -39,7 +39,7 @@ namespace noise
 namespace Oryx
 {
 	const int SAMPLE_X = 5;
-	const int SAMPLE_Y = 2;
+	const int SAMPLE_Y = 1;
 	const int SAMPLE_Z = 5;
 
 	struct ChunkCompare
@@ -101,7 +101,7 @@ namespace Oryx
 		{
 		public:
 
-			PerlinVolume(noise::module::Perlin* p,int x, int y, int z);
+			PerlinVolume(noise::module::Perlin* p,int x, int y, int z, Real scale=1.f);
 			double sample(int x, int y, int z);
 			
 		private:

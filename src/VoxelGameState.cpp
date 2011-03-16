@@ -33,6 +33,7 @@ namespace Oryx
 		:GameState()
 	{
 		toggle = false;
+		toggle2 = false;
 	}
 	
 	void VoxelGameState::init()
@@ -42,9 +43,9 @@ namespace Oryx
 		OgreSubsystem* ogre = mEngine->getSubsystem("OgreSubsystem")->castType<OgreSubsystem>();
 		BulletSubsystem* bts = mEngine->getSubsystem("BulletSubsystem")->castType<BulletSubsystem>();
 		OISSubsystem* ois = mEngine->getSubsystem("OISSubsystem")->castType<OISSubsystem>();
-		ois->initInput(ogre->getWindowHandle(),false);
-		ogre->setBackgroundColor(Colour(0.3f,0.6f,0.9f));
-		ogre->setLinearFog(125.f,175.f,Colour(0.3f,0.6f,0.9f));
+		ois->initInput(ogre->getWindowHandle(),false );
+		ogre->setBackgroundColor(Colour(0.6f,0.6f,0.6f));
+		ogre->setLinearFog(125.f,175.f,Colour(0.6f,0.6f,0.6f));
 		mgr = new ExplosionManager();
 
 		GUIScreen* scrn = ogre->getGUI()->createScreen(ogre->getMainViewport(),"TechDemo","Test");
@@ -68,7 +69,7 @@ namespace Oryx
 		// TODO ch = bts->createQuantaCCT(Vector3(0,50,0));
 		//
 		ChaiscriptSubsystem* chai = mEngine->getSubsystem("ChaiscriptSubsystem")->castType<ChaiscriptSubsystem>();
-		chai->runString("getAL().play2D(\"../media/audio/boom.wav\");");
+		//chai->runString("getAL().play2D(\"../media/audio/boom.wav\");");
 	}
 
 	void VoxelGameState::update(Real delta)
@@ -120,6 +121,13 @@ namespace Oryx
 						xc->killBlocks(r.position,4);
 						mgr->createExplosion(r.position);
 					}
+					else if(ois->isKeyDown("KC_T"))
+					{
+						Mesh* me = ogre->createMesh("Pig.mesh");
+						me->setPosition(r.position);
+						ogre->getRootSceneNode()->addChild(me);
+						me->yaw(rand()%360);
+					}
 					else
 						xc->killBlock(r.position,r.normal);
 				}
@@ -157,8 +165,6 @@ namespace Oryx
 
 	void VoxelGameState::deinit()
 	{
-		// tell bullet to stop (it should do this on its own?)
-		mEngine->getSubsystem("BulletSubsystem")->castType<BulletSubsystem>()->stopSimulation();
 	}
 }
 

@@ -37,6 +37,22 @@ material Arrow
 	}
 }
 
+material MCPIG
+{
+	technique
+	{
+		pass
+		{
+			lighting off
+			texture_unit
+			{
+				texture pig.png
+				tex_address_mode wrap
+			}
+		}
+	}
+}
+
 material DebugSphere
 {
 	technique
