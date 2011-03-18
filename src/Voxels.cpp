@@ -31,8 +31,15 @@
 #include "OgreSubsystem/OgreSubsystem.h"
 
 #include "VoxelGameState.h"
+#include <boost/thread.hpp>
 
 using namespace Oryx;
+
+void threadme()
+{
+	std::cout<<"whoo\n";
+	std::cin.get();
+}
 
 int main()
 {
@@ -67,6 +74,9 @@ int main()
 
     // delete the engine object
     delete eng;
+
+	//boost::thread printStuff(threadme);
+	//printStuff.join();
 
     return 0;
 }

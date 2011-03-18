@@ -50,22 +50,13 @@ namespace Oryx
 		void update(Real delta);
 		void deinit();
 
-		QuantaController* qcc;
-
-		//void processPackets(byte* data,size_t length,size_t id);
-		//void addPeer(byte id,String name);
-		//void removePeer(byte id);
 		void mouse(const Message& msg);
 		StaticText* txt; 
-		//std::map<byte,TestPeer*> mPeers;
-		//Client* mClient;
 		FPSCamera* mCam;
 		Real mTimer;
-		GUIRectangle* curse;
 		Chunk* c;
 		bool toggle;
 		bool toggle2;
-		PhysicsObject* box;
 		ExplosionManager* mgr;
 		ChunkManager* cmgr;
 		int currentMat;

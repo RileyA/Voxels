@@ -29,31 +29,15 @@
 
 namespace Oryx
 {
-	void quad(Vector3 pos,int normal,MeshData& d,short type,Colour diffuse,size_t atlas);
-
-	//-----------------------------------------------------------------------
-
 	Chunk::Chunk(Vector3 position,ChunkManager* parent,byte* data)
-		:mPosition(position),mParent(parent)
+		:mPosition(position),mParent(parent),mBlock(0),mChunk(0),
+		mAtlasDimensions(16),mMaterial("MeinKraft"),mDirty(false),
+		mActive(false)
 	{	
-		mAtlasDimensions = 16;
-		mMaterial = "MeinKraft";
-		mChunk = 0;
-		mPosition = position;
 		mOgre = Engine::getPtr()->getSubsystem("OgreSubsystem")->castType<OgreSubsystem>();
 
 		memset(light,(byte)0,CHUNK_VOLUME);
 		memset(blocked,(byte)0,CHUNK_VOLUME);
-
-		//for(int i=0;i<CHUNK_SIZE_X;++i)
-		//for(int j=0;j<CHUNK_SIZE_Y;++j)
-		//for(int k=0;k<CHUNK_SIZE_Z;++k)
-		//	blocked[i][j][k] = j<32 ? 4 : 0;
-
-		mBlock = 0;//new PhysicsBlock(0,0,0,position,0,this);
-
-		mActive = false;
-		mDirty = false;
 
 		for(int p=0;p<6;++p)
 			neighbors[p] = 0;
@@ -143,6 +127,7 @@ namespace Oryx
 	{
 		if(!mActive)
 			return;
+
 		p += OFFSET;
 		p -= mPosition;
 
@@ -160,6 +145,7 @@ namespace Oryx
 	{
 		if(!mActive)
 			return;
+
 		p += OFFSET;
 		p -= mPosition;
 
@@ -181,6 +167,7 @@ namespace Oryx
 	{
 		if(!mActive)
 			return;
+
 		p += OFFSET;
 		p-=mPosition;
 		float x = (n.x<0) ? -n.x : n.x;
@@ -210,11 +197,12 @@ namespace Oryx
 
 	void Chunk::rebuildPhysics(MeshData& d)
 	{
-		if(!mActive)
-			return;
-		if(!mBlock)
-			mBlock = new PhysicsBlock(0,0,0,mPosition,0,this);
-		mBlock->rebuild(d);
+		if(mActive)
+		{
+			if(!mBlock)
+				mBlock = new PhysicsBlock(0,0,0,mPosition,0,this);
+			mBlock->rebuild(d);
+		}
 	}
 	//-----------------------------------------------------------------------
 
@@ -372,10 +360,10 @@ namespace Oryx
 			lighting/=4.f;
 
 			#endif
-
+			
 			d.diffuse.push_back(lighting);
-			d.diffuse.push_back(lighting);
-			d.diffuse.push_back(lighting);
+			d.diffuse.push_back(lighting / 1.2f);
+			d.diffuse.push_back(lighting / 1.4f);
 			d.diffuse.push_back(1.f);
 		}
 	}

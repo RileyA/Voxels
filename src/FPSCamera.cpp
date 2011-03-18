@@ -26,7 +26,7 @@
 namespace Oryx
 {
 	FPSCamera::FPSCamera()
-		:Object()
+		:Object(),mPitch(0)
 	{
 		createSlot("look",this,&FPSCamera::look);
 		EventHandler::getDestination("OISSubsystem")->getSignal("mouseMoved")
@@ -66,7 +66,16 @@ namespace Oryx
 		if(const MessageAny<Vector2>* ms = message_cast<Vector2>(msg))
 		{
 			mYawNode->yaw(ms->data.x*-0.5f);
-			mPitchNode->pitch(ms->data.y*-0.5f);
+
+			Real tryPitch = ms->data.y*-0.5f;
+			Real actualPitch = tryPitch;
+
+			if(mPitch + tryPitch > 80.f)
+				actualPitch = 80.f - mPitch;
+			else if(mPitch < -80.f)
+				actualPitch = -80.f - mPitch;
+			mPitch += actualPitch;
+			mPitchNode->pitch(actualPitch);
 		}
 	}
 

@@ -43,9 +43,9 @@ namespace Oryx
 		OgreSubsystem* ogre = mEngine->getSubsystem("OgreSubsystem")->castType<OgreSubsystem>();
 		BulletSubsystem* bts = mEngine->getSubsystem("BulletSubsystem")->castType<BulletSubsystem>();
 		OISSubsystem* ois = mEngine->getSubsystem("OISSubsystem")->castType<OISSubsystem>();
-		ois->initInput(ogre->getWindowHandle(),false );
-		ogre->setBackgroundColor(Colour(0.6f,0.6f,0.6f));
-		ogre->setLinearFog(125.f,175.f,Colour(0.6f,0.6f,0.6f));
+		ois->initInput(ogre->getWindowHandle(),true );
+		ogre->setBackgroundColor(Colour(0.3f,0.6f,0.9f));
+		ogre->setLinearFog(125.f,175.f,Colour(0.3f,0.6f,0.9f));
 		mgr = new ExplosionManager();
 
 		GUIScreen* scrn = ogre->getGUI()->createScreen(ogre->getMainViewport(),"TechDemo","Test");
@@ -66,8 +66,8 @@ namespace Oryx
 		// set gravity
 		bts->setGravity(Vector3(0,-5,0));
 
-		// TODO ch = bts->createQuantaCCT(Vector3(0,50,0));
-		//
+		ch = bts->createQuantaCCT(Vector3(0,50,0));
+		
 		ChaiscriptSubsystem* chai = mEngine->getSubsystem("ChaiscriptSubsystem")->castType<ChaiscriptSubsystem>();
 		//chai->runString("getAL().play2D(\"../media/audio/boom.wav\");");
 	}
@@ -88,7 +88,10 @@ namespace Oryx
 		if(move.squaredLength()>0)
 			move.normalize();
 
-		//TODO ch->setMoveVector(move);
+		ch->setMoveVector(move);
+
+		if(ois->wasKeyPressed("KC_SPACE"))
+			ch->jump(-0.65f);
 
 		if(ois->isKeyDown("KC_ESCAPE"))
 			sendMessage(MessageAny<String>("kill"),"Engine");
@@ -160,7 +163,7 @@ namespace Oryx
 		mTimer+=delta*(float)rand()/(float)RAND_MAX;
 		cmgr->generate(mCam->getPosition());
 
-		// TODO mCam->mPosNode->setPosition(ch->getPosition()+Vector3(0,1.2f,0));
+		mCam->mPosNode->setPosition(ch->getPosition()+Vector3(0,1.2f,0));
 	}
 
 	void VoxelGameState::deinit()

@@ -38,10 +38,6 @@ namespace noise
 
 namespace Oryx
 {
-	const int SAMPLE_X = 5;
-	const int SAMPLE_Y = 1;
-	const int SAMPLE_Z = 5;
-
 	struct ChunkCompare
 	{
 	public:
@@ -107,7 +103,7 @@ namespace Oryx
 		private:
 
 			noise::module::Perlin* mNoise;
-			double mData[SAMPLE_X][SAMPLE_Y][SAMPLE_Z];
+			double mData[5][1][5];
 
 		};
 	};

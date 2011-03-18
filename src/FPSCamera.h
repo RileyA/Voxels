@@ -42,6 +42,8 @@ namespace Oryx
 		OgreSubsystem* mOgre;
 		OISSubsystem* mOIS;
 
+		Real mPitch;
+
 		Camera* mCamera;
 		SceneNode* mRollNode;	
 		SceneNode* mYawNode;
