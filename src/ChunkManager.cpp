@@ -28,7 +28,7 @@ namespace Oryx
 	const Real ChunkManager::UPDATE_INTERVAL = 0.1f;
 
 	ChunkManager::ChunkManager(Vector3 position)
-		:radius(15),mLast(10,10,10)
+		:radius(8),mLast(10,10,10)
 	{
 		mPerlin = new noise::module::Perlin();
 		generate(position, Vector3::UNIT_Z, true);
